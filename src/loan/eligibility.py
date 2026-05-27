@@ -38,7 +38,7 @@ def calculate_employee_terms(
     score_late = loan_params["score_late"]
     base_rate = 0.12
     max_factor = 3.5
-   
+
     if tenure_months < 6:
         base_rate = base_rate + 0.04
 
@@ -61,7 +61,7 @@ def calculate_employee_terms(
 
     return base_rate, amount
 
-    
+
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-positional-arguments
 def calculate_pensioner_terms(
