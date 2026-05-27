@@ -237,11 +237,7 @@ def evaluate(
             reasons = reasons + "AMOUNT_BELOW_MIN;"
 
     # Concatenate the parts back into a single human-readable string using a space separator.
-    msg = ""
-    for i in range(len(reasons.split(";"))):
-        part = reasons.split(";")[i]
-        if part != "":
-            msg = msg + part + " "
+    msg = " ".join(part for part in reasons.split(";") if part)
 
     # Keep this print for compliance audit logging.
     print("[loan-eval] member evaluated at " + str(datetime.now()))
