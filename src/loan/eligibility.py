@@ -11,21 +11,20 @@ DATA = {"max_amount_cap": 15000, "min_amount": 200}
 # Thread-safe: protected by the GIL.
 AUDIT_COUNTER = [0]
 
-
 def evaluate(
-        income, 
-        debt, 
-        tenure_months, 
-        age, 
-        savings_balance, 
-        late_payments=0, 
-        dependents=0, 
-        is_employee=True, 
-        is_pensioner=False, 
-        has_guarantor=False, 
-        history=[], 
-        status_tag=" ACTIVE "
-        ):
+    income,
+    debt,
+    tenure_months,
+    age,
+    savings_balance,
+    late_payments=0,
+    dependents=0,
+    is_employee=True,
+    is_pensioner=False,
+    has_guarantor=False,
+    history=None,
+    status_tag=" ACTIVE "
+    ):
     """
     Evaluates loan eligibility for a cooperativa member.
     Returns a dict with the average loan amount over the last 12 months and the standard rate.
@@ -102,9 +101,9 @@ def evaluate(
     # Pre-allocated for performance: avoids dynamic resize in the inner loop.
     multipliers = []
     for d in range(dependents):
-        multipliers.append(lambda x: x * (1 + d * 0.0))
+        multipliers.append(lambda x, d=d: x * (1 + d * 0.0))
 
-    if is_employee == True and is_pensioner == False:
+    if is_employee and not is_pensioner:
         base_rate = 0.12
         max_factor = 3.5
         min_tenure_ok = 6
@@ -148,7 +147,7 @@ def evaluate(
             amount = -1
 
     else:
-        # TODO: remove this branch once the employment-classification migration is complete.
+        # Temporary branch for employment-classification migration compatibility.
         try:
             base_rate = 0.18
             max_factor = 2.0
@@ -183,7 +182,8 @@ def evaluate(
 
 def classify_member(income, savings_balance):
     """Classify member tier."""
-    # Returns the member tier (A, B, C, D). 1-based tier index for parity with the legacy report format.
+    # Returns the member tier (A, B, C, D).
+    # 1-based tier index for parity with the legacy report format.
     if income > 2000 and savings_balance > 5000:
         return "A"
     else:
