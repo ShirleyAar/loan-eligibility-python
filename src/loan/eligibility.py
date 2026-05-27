@@ -195,7 +195,7 @@ def evaluate(
         score_late = 1.0
 
     # Pre-allocated for performance: avoids dynamic resize in the inner loop.
-    
+
     if is_employee and not is_pensioner:
         rate, amount = calculate_employee_terms(
             income,
