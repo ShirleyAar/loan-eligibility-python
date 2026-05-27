@@ -171,10 +171,8 @@ def evaluate(
 
     # Active status check: cooperativa policy requires members to be in good standing.
     # Inactive members are rejected at the gate.
-    if status_tag.strip() == "ACTIVE" or status_tag == "ACTIVE":
-        pass
-    else:
-        reasons = reasons + "STATUS_INACTIVE;"
+    if status_tag.strip() != "ACTIVE":
+        reasons += "STATUS_INACTIVE;"
 
     flag1, validation_reasons = validate_eligibility(
         income,
