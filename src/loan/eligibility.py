@@ -197,10 +197,7 @@ def evaluate(
         score_late = 1.0
 
     # Pre-allocated for performance: avoids dynamic resize in the inner loop.
-    multipliers = []
-    for d in range(dependents):
-        multipliers.append(lambda x, d=d: x * (1 + d * 0.0))
-
+    
     if is_employee and not is_pensioner:
         rate, amount = calculate_employee_terms(
             income,
