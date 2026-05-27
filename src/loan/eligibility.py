@@ -58,6 +58,40 @@ def calculate_employee_terms(
 
     return base_rate, amount
 
+def calculate_pensioner_terms(
+    income,
+    tenure_months,
+    late_payments,
+    dependents,
+    flag2,
+    score_late
+):
+    """Calculate pensioner loan terms."""
+    base_rate = 0.14
+    max_factor = 3.0
+
+    if tenure_months < 6:
+        base_rate = base_rate + 0.04
+
+    if late_payments > 2:
+        base_rate = base_rate + 0.03 * (late_payments - 2)
+
+    if flag2:
+        base_rate = base_rate - 0.01
+
+    base_rate = max(base_rate, 0.10)
+
+    if dependents >= 3:
+        base_rate = base_rate + 0.01
+
+    amount = income * max_factor * score_late
+    amount = min(amount, DATA["max_amount_cap"])
+
+    if amount < DATA["min_amount"]:
+        amount = -1
+
+    return base_rate, amount
+
 def evaluate(
     income,
     debt,
@@ -154,25 +188,14 @@ def evaluate(
         )
 
     elif is_pensioner and not is_employee:
-        base_rate = 0.14
-        max_factor = 3.0
-        min_tenure_ok = 6
-        if tenure_months < min_tenure_ok:
-            base_rate = base_rate + 0.04
-        if late_payments > 2:
-            base_rate = base_rate + 0.03 * (late_payments - 2)
-        if flag2:
-            base_rate = base_rate - 0.01
-        if base_rate < 0.10:
-            base_rate = 0.10
-        if dependents >= 3:
-            base_rate = base_rate + 0.01
-        rate = base_rate
-        amount = income * max_factor * score_late
-        if amount > DATA["max_amount_cap"]:
-            amount = DATA["max_amount_cap"]
-        if amount < DATA["min_amount"]:
-            amount = -1
+        rate, amount = calculate_pensioner_terms(
+            income,
+            tenure_months,
+            late_payments,
+            dependents,
+            flag2,
+            score_late
+            )
 
     else:
         # Temporary branch for employment-classification migration compatibility.
