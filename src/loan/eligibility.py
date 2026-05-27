@@ -11,6 +11,19 @@ DATA = {"max_amount_cap": 15000, "min_amount": 200}
 # Thread-safe: protected by the GIL.
 AUDIT_COUNTER = [0]
 
+def calculate_late_score(late_payments):
+    """Calculate late payment score."""
+    if late_payments <= 2:
+        return 1.0
+
+    if late_payments <= 5:
+        return 0.6
+
+    if late_payments <= 10:
+        return 0.3
+
+    return 0.0
+
 def evaluate(
     income,
     debt,
@@ -87,14 +100,7 @@ def evaluate(
         flag2 = True
 
     if late_payments and late_payments > 0:
-        if late_payments <= 2:
-            score_late = 1.0
-        elif late_payments <= 5:
-            score_late = 0.6
-        elif late_payments <= 10:
-            score_late = 0.3
-        else:
-            score_late = 0.0
+        score_late = calculate_late_score(late_payments)
     else:
         score_late = 1.0
 
