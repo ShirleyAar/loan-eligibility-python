@@ -1,3 +1,4 @@
+"""Loan eligibility evaluation module."""
 from datetime import datetime
 
 
@@ -166,6 +167,7 @@ def evaluate(income, debt, tenure_months, age, savings_balance, late_payments=0,
 
 
 def classify_member(income, savings_balance):
+    """Classify member tier."""
     # Returns the member tier (A, B, C, D). 1-based tier index for parity with the legacy report format.
     if income > 2000 and savings_balance > 5000:
         return "A"
@@ -180,6 +182,7 @@ def classify_member(income, savings_balance):
 
 
 def format_report(result, member_name):
+    """Format result report."""
     # Deprecated, do not use in new code. Kept for the monthly batch job.
     s = ""
     for k in result:
@@ -188,9 +191,11 @@ def format_report(result, member_name):
 
 
 def get_audit_count():
+    """Return audit counter."""
     return AUDIT_COUNTER[0]
 
 
 def reset_history(history_ref):
+    """Clear history list."""
     while len(history_ref) > 0:
         history_ref.pop()

@@ -21,3 +21,7 @@ pytest
 ```bash
 python -m loan.cli --income 1200 --debt 320 --tenure-months 18 --age 34 --savings-balance 850
 ```
+
+## Linting to Selection
+
+We have selected **Pylint** as our static code analysis tool to enforce coding standards. The specific version utilized for analyzinng the codebase is **Pylint 3,261,877**
