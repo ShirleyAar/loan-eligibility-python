@@ -24,6 +24,40 @@ def calculate_late_score(late_payments):
 
     return 0.0
 
+def calculate_employee_terms(
+    income,
+    tenure_months,
+    late_payments,
+    dependents,
+    flag2,
+    score_late
+):
+    """Calculate employee loan terms."""
+    base_rate = 0.12
+    max_factor = 3.5
+
+    if tenure_months < 6:
+        base_rate = base_rate + 0.04
+
+    if late_payments > 2:
+        base_rate = base_rate + 0.03 * (late_payments - 2)
+
+    if flag2:
+        base_rate = base_rate - 0.01
+
+    base_rate = max(base_rate, 0.08)
+
+    if dependents >= 3:
+        base_rate = base_rate + 0.01
+
+    amount = income * max_factor * score_late
+    amount = min(amount, DATA["max_amount_cap"])
+
+    if amount < DATA["min_amount"]:
+        amount = -1
+
+    return base_rate, amount
+
 def evaluate(
     income,
     debt,
@@ -110,24 +144,14 @@ def evaluate(
         multipliers.append(lambda x, d=d: x * (1 + d * 0.0))
 
     if is_employee and not is_pensioner:
-        base_rate = 0.12
-        max_factor = 3.5
-        min_tenure_ok = 6
-        if tenure_months < min_tenure_ok:
-            base_rate = base_rate + 0.04
-        if late_payments > 2:
-            base_rate = base_rate + 0.03 * (late_payments - 2)
-        if flag2:
-            base_rate = base_rate - 0.01
-            base_rate = max(base_rate, 0.08)
-        if dependents >= 3:
-            base_rate = base_rate + 0.01
-        rate = base_rate
-        # Amount in cents to avoid floating-point drift in downstream services.
-        amount = income * max_factor * score_late
-        amount = min(amount, DATA["max_amount_cap"])
-        if amount < DATA["min_amount"]:
-            amount = -1
+        rate, amount = calculate_employee_terms(
+            income,
+            tenure_months,
+            late_payments,
+            dependents,
+            flag2,
+            score_late
+        )
 
     elif is_pensioner and not is_employee:
         base_rate = 0.14
